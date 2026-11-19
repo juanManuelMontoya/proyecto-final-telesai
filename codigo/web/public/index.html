@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TELESAI · Aseo, desinfección y mantenimiento</title>
+  <style>
+    :root { --verde:#0f766e; --verde-osc:#134e4a; --claro:#f0fdfa; --texto:#1f2937; --gris:#6b7280; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: "Segoe UI", system-ui, sans-serif; color:var(--texto); background:#fff; line-height:1.55; }
+    header { background:var(--verde-osc); color:#fff; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    header b { font-size:1.4rem; letter-spacing:2px; }
+    nav a { color:#ccfbf1; margin-left:18px; text-decoration:none; font-size:.95rem; }
+    .hero { background:linear-gradient(135deg,var(--verde-osc),var(--verde)); color:#fff; padding:70px 24px; text-align:center; }
+    .hero h1 { font-size:2.3rem; margin:0 0 12px; }
+    .hero p { max-width:720px; margin:0 auto 22px; font-size:1.1rem; color:#ccfbf1; }
+    .sello { display:inline-block; border:2px solid #5eead4; border-radius:30px; padding:6px 18px; font-weight:600; }
+    section { max-width:1100px; margin:0 auto; padding:56px 24px; }
+    h2 { color:var(--verde-osc); font-size:1.7rem; margin-top:0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px; }
+    .card { background:var(--claro); border:1px solid #99f6e4; border-radius:12px; padding:20px; }
+    .card h3 { margin:0 0 8px; color:var(--verde); font-size:1.1rem; }
+    .card small { color:var(--gris); }
+    .bloque { background:var(--claro); }
+    .sectores { display:flex; flex-wrap:wrap; gap:12px; }
+    .sectores span { background:#fff; border:1px solid #5eead4; border-radius:8px; padding:10px 16px; font-weight:600; color:var(--verde-osc); }
+    form { display:grid; gap:12px; max-width:560px; }
+    input, select, textarea { font:inherit; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; }
+    button { background:var(--verde); color:#fff; border:0; border-radius:8px; padding:12px; font-size:1rem; cursor:pointer; }
+    #estado { font-size:.9rem; color:var(--gris); }
+    footer { background:#0b2e2b; color:#99f6e4; padding:24px; text-align:center; font-size:.85rem; }
+    footer p { margin:4px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <b>TELESAI</b>
+    <nav><a href="#servicios">Servicios</a><a href="#calidad">Calidad</a><a href="#sectores">Sectores</a><a href="#contacto">Contacto</a></nav>
+  </header>
+
+  <div class="hero">
+    <h1>Espacios limpios, seguros y bien mantenidos</h1>
+    <p>Empresa de Armenia, Quindío, dedicada al aseo, la desinfección y el mantenimiento de edificaciones comerciales, corporativas, industriales y hospitalarias.</p>
+    <span class="sello">Sistema de gestión de calidad ISO 9001:2015</span>
+  </div>
+
+  <section id="servicios">
+    <h2>Nuestros servicios</h2>
+    <p id="estado">Cargando servicios desde la base de datos…</p>
+    <div class="grid" id="lista"></div>
+  </section>
+
+  <div class="bloque">
+    <section id="calidad">
+      <h2>Política de calidad</h2>
+      <p>Prestamos servicios de aseo y mantenimiento con personal capacitado, procesos documentados y seguimiento a la satisfacción del cliente, buscando la mejora continua de acuerdo con la norma ISO 9001:2015.</p>
+      <p>Cada servicio se programa, se ejecuta y se verifica con registros que permiten la trazabilidad de lo realizado en las instalaciones de nuestros clientes.</p>
+    </section>
+  </div>
+
+  <section id="sectores">
+    <h2>Sectores que atendemos</h2>
+    <div class="sectores"><span>Comercial</span><span>Corporativo</span><span>Industrial</span><span>Hospitalario</span><span>Residencial</span></div>
+  </section>
+
+  <div class="bloque">
+    <section id="contacto">
+      <h2>Solicite una cotización</h2>
+      <form id="form">
+        <input name="nombre" placeholder="Nombre completo" required>
+        <input name="empresa" placeholder="Empresa">
+        <input name="telefono" placeholder="Teléfono">
+        <select name="servicio" id="servicio"><option value="">Servicio de interés</option></select>
+        <textarea name="mensaje" rows="4" placeholder="Cuéntenos qué necesita" required></textarea>
+        <button>Enviar solicitud</button>
+        <span id="respuesta"></span>
+      </form>
+      <p><b>Sede:</b> Carrera 14A No. 10A N-01, Armenia, Quindío.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>Proyecto académico — Administración de Infraestructura de TI, Universidad del Quindío (2026). Sitio de referencia, no es el sitio oficial de la empresa.</p>
+    <p>Desplegado con Dokploy · Servidor srv-telesai · Datos servidos desde MySQL</p>
+  </footer>
+
+  <script>
+    async function cargar() {
+      try {
+        const r = await fetch('/api/servicios');
+        const datos = await r.json();
+        if (!r.ok) throw new Error(datos.error);
+        const lista = document.getElementById('lista');
+        const sel = document.getElementById('servicio');
+        datos.forEach(s => {
+          const c = document.createElement('div');
+          c.className = 'card';
+          c.innerHTML = '<h3></h3><p></p><small></small>';
+          c.querySelector('h3').textContent = s.nombre;
+          c.querySelector('p').textContent = s.descripcion;
+          c.querySelector('small').textContent = 'Sector: ' + s.sector;
+          lista.appendChild(c);
+          const o = document.createElement('option');
+          o.textContent = s.nombre; sel.appendChild(o);
+        });
+        document.getElementById('estado').textContent = datos.length + ' servicios cargados desde MySQL.';
+      } catch (e) {
+        document.getElementById('estado').textContent = 'No se pudo leer la base de datos: ' + e.message;
+      }
+    }
+    document.getElementById('form').addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const datos = Object.fromEntries(new FormData(ev.target));
+      const r = await fetch('/api/solicitudes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+      const j = await r.json();
+      document.getElementById('respuesta').textContent = r.ok ? 'Solicitud registrada con el número ' + j.id + '. Gracias.' : 'Error: ' + j.error;
+      if (r.ok) ev.target.reset();
+    });
+    cargar();
+  </script>
+</body>
+</html>
