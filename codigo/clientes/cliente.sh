@@ -10,7 +10,7 @@ echo "domain $DOMINIO server $SERVIDOR" > /etc/yp.conf
 sed -i -E 's/^(passwd|group|shadow):.*/\1:         files nis/' /etc/nsswitch.conf
 grep -E '^(passwd|group|shadow)' /etc/nsswitch.conf
 rpcbind -w
-ypbind -no-dbus
+ypbind
 sleep 3
 echo "Servidor NIS enlazado: $(ypwhich)"
 
