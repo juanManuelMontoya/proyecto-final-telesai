@@ -1,0 +1,35 @@
+graph LR
+  subgraph RED["Red local TELESAI - 192.168.56.0/24"]
+    W["Equipos Windows<br/>oficina"]
+    L["Equipos Linux<br/>cliente NFS/NIS"]
+    ADM["Administrador TI<br/>SSH / navegador"]
+  end
+
+  subgraph SRV["srv-telesai - 192.168.56.10<br/>Linux Mint 22.3 (base Ubuntu 24.04) en VirtualBox"]
+    subgraph DOK["Dokploy (Docker Swarm)"]
+      T["Traefik<br/>80/443 HTTPS"]
+      WEB["web-telesai<br/>Node.js + Express :3000"]
+      DB[("MySQL 8<br/>telesai_db :3306")]
+      PANEL["Panel Dokploy :3000"]
+    end
+    NTP["NTP - ntpsec<br/>UDP 123"]
+    NFS["NFS<br/>/srv/nfs/telesai :2049"]
+    NIS["NIS ypserv<br/>dominio telesai.local"]
+    CUPS["CUPS<br/>Telesai-PDF :631"]
+    SMB["Samba<br/>[telesai] :445"]
+  end
+
+  INET(("Internet<br/>pool.ntp.org<br/>GitHub"))
+
+  W -- "HTTPS" --> T
+  ADM -- "HTTP :3000" --> PANEL
+  T --> WEB
+  WEB -- "red dokploy-network" --> DB
+  W -- "SMB" --> SMB
+  W -- "IPP" --> CUPS
+  W -- "hora" --> NTP
+  L -- "montaje NFS" --> NFS
+  L -- "autenticación" --> NIS
+  L -- "hora" --> NTP
+  NTP -- "sincroniza" --> INET
+  PANEL -- "git clone" --> INET
